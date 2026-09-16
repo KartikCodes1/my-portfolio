@@ -134,6 +134,46 @@
   border-radius: 0.75rem;
 }
 
+/* Rendering */
+
+/*
+ * Sections below the hero skip layout and paint until they are near the viewport,
+ * so the first load doesn't lay out the whole page at once. `auto` remembers each
+ * section's real size once it has rendered.
+ *
+ * Until then a section is sized from its estimate. Estimates close to the real
+ * heights keep in-page links landing in the right place and stop the page shifting
+ * in browsers without scroll anchoring (Safari) when a section above the viewport
+ * renders. They are content heights: the section's padding and border are added on
+ * top. If a section's content changes a lot, re-measure and update its numbers.
+ */
+main > section:not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto var(--estimated-height, 1500px);
+}
+
+#work { --estimated-height: 3060px; }
+#approach { --estimated-height: 1360px; }
+#stack { --estimated-height: 1960px; }
+#about { --estimated-height: 1380px; }
+#contact { --estimated-height: 1590px; }
+
+@media (width >= 48rem) {
+  #work { --estimated-height: 2610px; }
+  #approach { --estimated-height: 1000px; }
+  #stack { --estimated-height: 1430px; }
+  #about { --estimated-height: 1190px; }
+  #contact { --estimated-height: 1400px; }
+}
+
+@media (width >= 64rem) {
+  #work { --estimated-height: 1950px; }
+  #approach { --estimated-height: 880px; }
+  #stack { --estimated-height: 1040px; }
+  #about { --estimated-height: 750px; }
+  #contact { --estimated-height: 1230px; }
+}
+
 /* Motion */
 
 /*

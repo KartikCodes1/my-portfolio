@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { links, profile } from "@/content/site";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
@@ -52,6 +53,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         {children}
         <Footer />
         <AppShell />
+        <Analytics />
         <script
           type="application/ld+json"
           // Static, author-controlled data; `<` escaped so content can never close the tag.

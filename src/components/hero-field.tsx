@@ -32,7 +32,9 @@ export function HeroField() {
     const ctx = canvas?.getContext("2d");
     if (!canvas || !section || !ctx) return;
 
-    const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+    // One still frame for reduced motion, and on touch-only devices: with no cursor to react to,
+    // the idle wave would just spend battery.
+    const still = matchMedia("(prefers-reduced-motion: reduce), (hover: none)");
 
     let width = 0;
     let height = 0;
@@ -166,7 +168,7 @@ export function HeroField() {
     }
 
     function sync() {
-      const run = onScreen && !document.hidden && !reducedMotion.matches;
+      const run = onScreen && !document.hidden && !still.matches;
       if (run && !raf) {
         lastDraw = performance.now() - IDLE_FRAME_MS;
         raf = requestAnimationFrame(frame);
@@ -174,7 +176,7 @@ export function HeroField() {
         cancelAnimationFrame(raf);
         raf = 0;
       }
-      if (reducedMotion.matches) draw(0, 0, false);
+      if (still.matches) draw(0, 0, false);
     }
 
     const onPointer = (event: PointerEvent) => {
@@ -191,7 +193,7 @@ export function HeroField() {
     const resizeObserver = new ResizeObserver(() => {
       layout();
       // Resizing clears the canvas; repaint now so there is no blank frame.
-      draw(performance.now(), 0, !reducedMotion.matches);
+      draw(performance.now(), 0, !still.matches);
     });
     try {
       // Also fires when only the DPR changes (e.g. window dragged to another display).
@@ -211,7 +213,7 @@ export function HeroField() {
     section.addEventListener("pointerdown", onPointer, { passive: true });
     section.addEventListener("pointerleave", onPointerLeave);
     document.addEventListener("visibilitychange", sync);
-    reducedMotion.addEventListener("change", sync);
+    still.addEventListener("change", sync);
 
     sync();
 
@@ -223,7 +225,7 @@ export function HeroField() {
       section.removeEventListener("pointerdown", onPointer);
       section.removeEventListener("pointerleave", onPointerLeave);
       document.removeEventListener("visibilitychange", sync);
-      reducedMotion.removeEventListener("change", sync);
+      still.removeEventListener("change", sync);
     };
   }, []);
 
