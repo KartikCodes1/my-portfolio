@@ -4,12 +4,12 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { contactForm, links } from "@/content/site";
 
 type Status = "idle" | "sending" | "sent" | "error";
-type Fields = Record<keyof typeof contactForm.entries, string>;
+const { limits } = contactForm;
 
 const inputClass =
   "mt-2.5 block w-full rounded-md border border-line bg-bg px-3.5 text-[15px] text-fg transition-colors duration-200 placeholder:text-subtle hover:border-line-strong focus-visible:border-line-strong focus-visible:outline-offset-0 autofill:shadow-[inset_0_0_0_1000px_var(--color-bg)] autofill:[-webkit-text-fill-color:var(--color-fg)]";
 
-/** Sends a message to the Google Form configured in `contactForm`, or via the visitor's email app until one is set. */
+/** Sends the message to /api/contact, which emails it through Resend. Falls back to the visitor's email app if that isn't configured. */
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [sender, setSender] = useState({ name: "", email: "" });
@@ -31,40 +31,34 @@ export function ContactForm() {
     const form = event.currentTarget;
     const data = new FormData(form);
     const value = (key: string) => String(data.get(key) ?? "").trim();
-
-    // Honeypot: people never see this field, spam bots tend to fill it. Pretend it worked.
-    if (value("website")) {
-      setStatus("sent");
-      return;
-    }
-
-    const fields: Fields = {
+    // `website` is the honeypot; the API route quietly drops submissions that fill it.
+    const fields = {
       name: value("name"),
       email: value("email"),
       company: value("company"),
       topic: value("topic"),
       message: value("message"),
+      website: value("website"),
     };
 
-    if (!contactForm.formId) {
-      const subject = `${fields.topic || "Project enquiry"} from ${fields.name}`;
-      const signature = [fields.name, fields.company, fields.email].filter(Boolean).join("\n");
-      location.href = `mailto:${links.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`${fields.message}\n\n${signature}`)}`;
-      return;
-    }
-
     setStatus("sending");
-    const body = new URLSearchParams();
-    for (const [key, entry] of Object.entries(contactForm.entries)) body.append(entry, fields[key as keyof Fields]);
-
     try {
-      // Google Forms sends no CORS headers, so the response is opaque. A resolved request means it reached Google;
-      // a network failure rejects and shows the error state.
-      await fetch(`https://docs.google.com/forms/d/e/${contactForm.formId}/formResponse`, {
+      const res = await fetch("/api/contact", {
         method: "POST",
-        mode: "no-cors",
-        body,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fields),
       });
+
+      if (res.status === 503) {
+        // Email sending isn't configured on this deployment: hand the message to the visitor's email app instead.
+        const subject = `${fields.topic || "Project enquiry"} from ${fields.name}`;
+        const signature = [fields.name, fields.company, fields.email].filter(Boolean).join("\n");
+        location.href = `mailto:${links.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`${fields.message}\n\n${signature}`)}`;
+        setStatus("idle");
+        return;
+      }
+      if (!res.ok) throw new Error(`Contact API responded ${res.status}`);
+
       setSender({ name: fields.name.split(/\s+/)[0], email: fields.email });
       form.reset();
       setStatus("sent");
@@ -118,7 +112,15 @@ export function ContactForm() {
           <label htmlFor="contact-name" className="eyebrow">
             Name
           </label>
-          <input ref={firstInput} id="contact-name" name="name" required autoComplete="name" className={`${inputClass} h-11`} />
+          <input
+            ref={firstInput}
+            id="contact-name"
+            name="name"
+            required
+            maxLength={limits.name}
+            autoComplete="name"
+            className={`${inputClass} h-11`}
+          />
         </div>
 
         <div>
@@ -130,6 +132,7 @@ export function ContactForm() {
             name="email"
             type="email"
             required
+            maxLength={limits.email}
             autoComplete="email"
             spellCheck={false}
             className={`${inputClass} h-11`}
@@ -140,7 +143,13 @@ export function ContactForm() {
           <label htmlFor="contact-company" className="eyebrow">
             Company <span className="normal-case tracking-normal">(optional)</span>
           </label>
-          <input id="contact-company" name="company" autoComplete="organization" className={`${inputClass} h-11`} />
+          <input
+            id="contact-company"
+            name="company"
+            maxLength={limits.company}
+            autoComplete="organization"
+            className={`${inputClass} h-11`}
+          />
         </div>
 
         <fieldset className="sm:col-span-2">
@@ -169,6 +178,7 @@ export function ContactForm() {
             id="contact-message"
             name="message"
             required
+            maxLength={limits.message}
             rows={6}
             placeholder="What are you building, and where is it stuck?"
             className={`${inputClass} min-h-36 resize-y py-3 leading-relaxed`}
@@ -185,9 +195,7 @@ export function ContactForm() {
 
         <div className="flex flex-col-reverse gap-4 border-t border-line pt-6 sm:col-span-2 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-xs leading-relaxed text-subtle">
-            {contactForm.formId
-              ? "Delivered through Google Forms. I only use your details to reply."
-              : "Opens your email app with the message ready to send."}
+            Sent straight to my inbox. I only use your details to reply.
           </p>
           <button
             type="submit"

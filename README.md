@@ -38,7 +38,7 @@ All copy lives in `src/content/`. Components never hard-code personal facts, so 
 | `stack`    | Toolbox layers; each tool's `projects` lists project ids it links to              |
 | `about`    | Bio paragraphs, the config card, off-hours interests                              |
 | `contact`  | Contact section title and body                                                    |
-| `contactForm` | Google Form id, entry ids and topic options for the contact form (see [Contact form](#contact-form)) |
+| `contactForm` | Topic options and field length limits for the contact form (see [Contact form](#contact-form)) |
 
 **`src/content/projects.ts`**
 
@@ -55,21 +55,21 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.com
 
 ### Contact form
 
-The form in the Contact section posts directly to a Google Form, so messages show up in the form's Responses tab (and in a linked Sheet if you add one). There is no backend or API key. Until it is connected, submitting the form opens the visitor's email app with the message filled in.
+The form in the Contact section posts to `src/app/api/contact/route.ts`, which emails each message to `links.email` through [Resend](https://resend.com). The visitor's address is set as Reply-To, so replying from your inbox goes straight back to them. Until `RESEND_API_KEY` is set, submitting the form opens the visitor's email app with the message filled in.
 
-1. Create a Google Form with these questions:
-   - **Name**: Short answer, required
-   - **Email**: Short answer, required. Leave "Collect email addresses" off in Settings; the site can't fill that field.
-   - **Company**: Short answer, optional
-   - **Topic**: Multiple choice, optional. The options must match `contactForm.topics` in `site.ts` exactly.
-   - **Message**: Paragraph, required
-2. In Settings, make sure responding doesn't require signing in.
-3. In the form editor, open the ⋮ menu, choose **Get pre-filled link**, type something into every question and click **Get link**. The link looks like this:
-   `https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url&entry.1111111111=...&entry.2222222222=...`
-4. In `src/content/site.ts`, set `contactForm.formId` to `FORM_ID` and put each `entry.<number>` against `name`, `email`, `company`, `topic` and `message`.
-5. Send a test message from the site and check it appears under Responses.
+1. Create a Resend account and add your domain (`kartikcodes.io`) under **Domains**.
+2. Add the DNS records Resend shows (DKIM plus an SPF record and MX record on a `send` subdomain) in your DNS provider. They don't touch the records for your existing mailbox.
+3. Once the domain shows as verified, create an API key with **Sending access** only.
+4. Add the key to Vercel for Production (and Preview, if you want previews to send email). The CLI prompts for the value, so it never lands in your shell history:
+   ```bash
+   vercel env add RESEND_API_KEY production --sensitive
+   ```
+   For local testing, put it in `.env.local` (gitignored) as `RESEND_API_KEY=...`.
+5. Redeploy, send yourself a test message from the live site, and check it arrives.
 
-Google Forms doesn't let other sites read its responses, so the site shows "Message sent" once the request reaches Google and can't confirm the form accepted it. Re-test whenever you change the form's questions. A hidden honeypot field quietly drops most spam bots.
+Emails are sent from `contact@<your email domain>`. Set `CONTACT_FROM` (for example `Kartik Parmar <hello@kartikcodes.io>`) to use another verified address.
+
+Spam protection is a hidden honeypot field, server-side validation (lengths, email format, topic list) and a same-origin check. There's no rate limiting; if spam gets through, add a rate limit rule for `/api/contact` in Vercel Firewall. Topic options and field length limits live in `contactForm` in `site.ts`.
 
 ## Interactive features
 

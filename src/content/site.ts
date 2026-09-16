@@ -259,19 +259,11 @@ export const contact = {
 };
 
 /**
- * Contact form, delivered to a Google Form. Setup steps: README > "Contact form".
- * TODO: set `formId` and the five `entries` from your form's pre-filled link.
- * While `formId` is null the form still works: it opens the visitor's email app with the message filled in.
+ * Contact form. Messages are emailed to `links.email` through Resend by src/app/api/contact/route.ts.
+ * Setup: README > "Contact form". Until RESEND_API_KEY is set, the form opens the visitor's email app instead.
  */
 export const contactForm = {
-  formId: null as string | null,
-  entries: {
-    name: "entry.0000000000",
-    email: "entry.0000000000",
-    company: "entry.0000000000",
-    topic: "entry.0000000000",
-    message: "entry.0000000000",
-  },
-  // Must match the options of the Google Form's multiple-choice question exactly.
   topics: ["AI product or LLM feature", "Backend system or API", "Cloud, DevOps or infrastructure", "Full-time role", "Something else"],
+  // Enforced by the API route; the form mirrors them as maxLength.
+  limits: { name: 100, email: 254, company: 120, message: 5000 },
 };
