@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
+import { seo } from "@/content/site";
 import { siteUrl } from "@/lib/site-url";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  return [{ url: siteUrl, lastModified: new Date(), changeFrequency: "monthly", priority: 1 }];
+  // A fixed content date, not the build time: Google only trusts lastmod when it changes with the content.
+  return [{ url: siteUrl, lastModified: seo.updated }];
 }

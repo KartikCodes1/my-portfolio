@@ -145,7 +145,10 @@ function ProjectItem({
             <div className="flex flex-col gap-12 md:col-span-9 md:col-start-4 md:gap-14">
               <ProjectMeta project={project} />
 
-              <TraceDiagram nodes={project.trace} caption={`fig. ${number} · request trace`} active={open} />
+              {/* Trace, decisions and stack are optional: a case study still waiting on details simply omits them. */}
+              {project.trace.length > 0 && (
+                <TraceDiagram nodes={project.trace} caption={`fig. ${number} · request trace`} active={open} />
+              )}
 
               <div className="grid gap-12 md:grid-cols-9 md:gap-8">
                 <div className="md:col-span-4">
@@ -165,34 +168,38 @@ function ProjectItem({
                 </div>
               </div>
 
-              <div>
-                <h4 className="eyebrow">Decisions that mattered</h4>
-                <ol className="mt-5 grid gap-3 lg:grid-cols-3">
-                  {project.decisions.map((d, i) => (
-                    <li key={d.decision} className="panel p-5">
-                      <span aria-hidden className="font-mono text-xs text-subtle">
-                        D{i + 1}
-                      </span>
-                      <p className="mt-4 text-[15px] leading-snug font-medium text-pretty text-fg">{d.decision}</p>
-                      <p className="mt-2 text-sm leading-relaxed text-pretty text-muted">{d.why}</p>
-                    </li>
-                  ))}
-                </ol>
-              </div>
+              {project.decisions.length > 0 && (
+                <div>
+                  <h4 className="eyebrow">Decisions that mattered</h4>
+                  <ol className="mt-5 grid gap-3 lg:grid-cols-3">
+                    {project.decisions.map((d, i) => (
+                      <li key={d.decision} className="panel p-5">
+                        <span aria-hidden className="font-mono text-xs text-subtle">
+                          D{i + 1}
+                        </span>
+                        <p className="mt-4 text-[15px] leading-snug font-medium text-pretty text-fg">{d.decision}</p>
+                        <p className="mt-2 text-sm leading-relaxed text-pretty text-muted">{d.why}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
 
-              <div>
-                <h4 className="eyebrow">Stack</h4>
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {project.stack.map((tool) => (
-                    <li
-                      key={tool}
-                      className="rounded-md border border-line px-2 py-1 font-mono text-xs text-muted"
-                    >
-                      {tool}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {project.stack.length > 0 && (
+                <div>
+                  <h4 className="eyebrow">Stack</h4>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {project.stack.map((tool) => (
+                      <li
+                        key={tool}
+                        className="rounded-md border border-line px-2 py-1 font-mono text-xs text-muted"
+                      >
+                        {tool}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           </div>
         </div>

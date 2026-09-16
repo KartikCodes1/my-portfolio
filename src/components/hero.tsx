@@ -28,32 +28,30 @@ export function Hero() {
       <div className="shell relative flex flex-1 flex-col justify-end pt-28 pb-[clamp(3rem,9svh,6rem)] md:pt-32">
         <div className="grid gap-y-8 lg:grid-cols-12 lg:gap-x-8">
           <div className="lg:col-span-12">
-            <div className="eyebrow flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-              {profile.availability && (
-                <>
-                  <p className="flex items-center gap-2.5 text-muted">
-                    <span
-                      aria-hidden
-                      className="size-1.5 shrink-0 rounded-full bg-accent animate-[pulse-dot_2.4s_ease-out_infinite]"
-                    />
-                    {profile.availability}
-                  </p>
-                  <span aria-hidden className="hidden size-[3px] shrink-0 rounded-full bg-subtle sm:block" />
-                </>
-              )}
-              <p className="text-balance">
-                {profile.name} / {profile.role}
-              </p>
-            </div>
-
-            <h1 id="top-title" className="text-display mt-7 max-w-[16ch] md:mt-9">
-              {headlineHead}
-              <span className="whitespace-nowrap">
-                {headlineTail}
+            {profile.availability && (
+              <p className="eyebrow mb-3 flex items-center gap-2.5 text-muted">
                 <span
                   aria-hidden
-                  className="ml-[0.06em] inline-block h-[0.8em] w-[0.08em] bg-accent animate-[blink_1.1s_steps(1)_infinite]"
+                  className="size-1.5 shrink-0 rounded-full bg-accent animate-[pulse-dot_2.4s_ease-out_infinite]"
                 />
+                {profile.availability}
+              </p>
+            )}
+
+            {/* Name and role live inside the h1 so the page's main heading says who this is (search and screen readers). */}
+            <h1 id="top-title">
+              <span className="eyebrow block text-balance">
+                {profile.name} / {profile.role}{" "}
+              </span>
+              <span className="text-display mt-7 block max-w-[16ch] md:mt-9">
+                {headlineHead}
+                <span className="whitespace-nowrap">
+                  {headlineTail}
+                  <span
+                    aria-hidden
+                    className="ml-[0.06em] inline-block h-[0.8em] w-[0.08em] bg-accent animate-[blink_1.1s_steps(1)_infinite]"
+                  />
+                </span>
               </span>
             </h1>
           </div>

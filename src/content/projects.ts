@@ -1,10 +1,9 @@
 /**
- * Selected work.
+ * Selected work, from Kartik's resume and his notes on each project.
  *
- * ⚠️ Every project below is PLACEHOLDER content (`draft: true`), written to show
- * the shape of a good case study. Nothing here is a real client, metric, or result.
- * Replace the text with your real work, then set `draft: false` to remove the
- * "Draft" marker on the site. Keep ids stable if you reference them in ./site.ts.
+ * Company and client names are intentionally left out: projects are named, employers are not.
+ * `draft: true` renders a visible "Draft" marker; use it for any placeholder you add later.
+ * Keep ids stable, or update the matching `projects` lists in ./site.ts `stack`.
  */
 
 export type TraceKind = "client" | "service" | "ai" | "queue" | "store" | "infra";
@@ -25,6 +24,7 @@ export type Project = {
   kicker: string;
   /** One sentence: what the product/system does. */
   summary: string;
+  /** Empty strings are hidden on the site. */
   period: string;
   role: string;
   problem: string;
@@ -34,79 +34,110 @@ export type Project = {
   trace: TraceNode[];
   stack: string[];
   links: { label: string; href: string }[];
-  /** Shown when there are no public links, e.g. NDA note. */
+  /** Shown when there are no public links, e.g. "Internal project". */
   note?: string;
 };
 
 export const projects: Project[] = [
   {
-    id: "doc-intelligence",
-    draft: true,
-    title: "Document Intelligence Pipeline",
-    kicker: "AI · Document processing",
-    summary: "Turns incoming PDFs and scans into validated, structured records, and routes anything uncertain to a human.",
-    period: "", // TODO: e.g. "2024"
-    role: "", // TODO: e.g. "Lead backend engineer"
+    id: "cliniwise-ai",
+    draft: false,
+    title: "CliniWise AI",
+    kicker: "AI · Clinical trial operations",
+    summary:
+      "A generative AI platform for clinical trial teams that automates regulatory documentation, including patient and case narratives.",
+    period: "",
+    role: "Senior Software Engineer",
     problem:
-      "An operations team re-keyed data from hundreds of documents by hand. It was slow, error-prone, and impossible to scale without hiring. Fully automating it wasn't safe either: a wrong field in a financial record costs more than a slow one.",
+      "Clinical trial teams need patient and case narratives: consistent, submission-ready write-ups built from details in patient records. Producing them by hand is slow, repetitive work.",
     contribution: [
-      "Designed the ingestion → extraction → validation pipeline end to end",
-      "Built the FastAPI service and async workers that process documents in the background",
-      "Defined Pydantic schemas for every document type and validated all model output against them",
-      "Added a review queue so low-confidence extractions go to a person instead of the database",
+      "Designed and owned the Python microservices backend",
+      "Built the services on FastAPI and PostgreSQL, using Celery workers for background jobs",
+      "Deployed the backend as a distributed system across AWS, GCP and Azure",
+      "Cut narration time from 3 hours to 5 minutes",
     ],
     decisions: [
       {
-        decision: "Treat LLM output as untrusted input",
-        why: "Every response is validated against a strict schema and retried or escalated when it fails. Bad data never reaches downstream systems silently.",
-      },
-      {
-        decision: "Human-in-the-loop instead of 100% automation",
-        why: "A confidence threshold sends edge cases to review. The business gets speed on the common path and correctness on the rare one.",
-      },
-      {
-        decision: "Idempotent jobs keyed by document hash",
-        why: "Retries, duplicate uploads, and worker restarts can't create duplicate records, so the queue can be retried aggressively.",
+        decision: "Microservices with background workers",
+        why: "Generating a narrative takes far longer than a web request. Running that work on Celery workers keeps the APIs responsive and lets each service scale on its own.",
       },
     ],
     trace: [
-      { label: "Upload", detail: "web / email", kind: "client" },
-      { label: "Ingest API", detail: "FastAPI", kind: "service" },
-      { label: "Job queue", detail: "idempotent", kind: "queue" },
-      { label: "Extract", detail: "LLM + schema", kind: "ai" },
-      { label: "Records", detail: "PostgreSQL", kind: "store" },
+      { label: "Patient data", detail: "trial records", kind: "client" },
+      { label: "API", detail: "FastAPI", kind: "service" },
+      { label: "Task queue", detail: "Celery", kind: "queue" },
+      { label: "Narrative", detail: "LLM generation", kind: "ai" },
+      { label: "Database", detail: "PostgreSQL", kind: "store" },
     ],
-    stack: ["Python", "FastAPI", "Pydantic", "Azure OpenAI", "PostgreSQL", "Azure Blob Storage", "Docker"],
+    stack: ["Python", "FastAPI", "PostgreSQL", "Celery", "LLMs", "AWS", "GCP", "Azure"],
     links: [],
   },
   {
-    id: "knowledge-assistant",
-    draft: true,
-    title: "Permission-Aware Knowledge Assistant",
-    kicker: "AI · Retrieval (RAG)",
-    summary: "An internal assistant that answers questions from company documents with citations, using only documents the user is allowed to see.",
-    period: "", // TODO: e.g. "2024"
-    role: "", // TODO: e.g. "Forward deployed engineer"
+    // Kartik didn't build CoVigilAI from scratch; he made major modifications to it.
+    // TODO: stack and further contributions to come from Kartik.
+    // Product facts come from its public product site; no link, because that site names the vendor.
+    id: "covigilai",
+    draft: false,
+    title: "CoVigilAI",
+    kicker: "AI · Pharmacovigilance",
+    summary:
+      "An AI platform for drug safety teams that monitors medical literature for adverse drug events, triages potential case reports and produces regulator-ready E2B(R3) safety reports with MedDRA coding.",
+    period: "",
+    role: "",
     problem:
-      "Answers existed across wikis, shared drives, and PDFs, but finding them took longer than asking a colleague. A generic chatbot wasn't acceptable: it couldn't cite sources and would happily leak documents across teams.",
+      "Drug safety teams must regularly screen published medical literature for reports of side effects involving their medicines, then turn each valid case into a structured report for regulators. Doing that by hand across large volumes of articles is slow, repetitive work.",
     contribution: [
-      "Built the ingestion pipeline: parsing, chunking, embedding, and re-indexing on change",
+      "Made major enhancements to the existing platform rather than rebuilding it from scratch",
+      "Enhanced the processing pipeline and its orchestration",
+      "Strengthened the platform's security",
+      "Implemented a freemium model so new users can try the product through a demo",
+    ],
+    decisions: [
+      {
+        decision: "A freemium tier for trying the product",
+        why: "New users can try the platform for themselves in a demo before committing to it.",
+      },
+    ],
+    trace: [
+      { label: "Literature", detail: "journals", kind: "client" },
+      { label: "Triage", detail: "case reports", kind: "ai" },
+      { label: "Extract", detail: "key details", kind: "ai" },
+      { label: "Report", detail: "E2B(R3)", kind: "service" },
+      { label: "QC review", detail: "audit trail", kind: "service" },
+    ],
+    stack: [],
+    links: [],
+  },
+  {
+    // TODO: Kartik will add more detail about Amplify AI.
+    id: "amplify-ai",
+    draft: false,
+    title: "Amplify AI",
+    kicker: "AI · Retrieval (RAG)",
+    summary:
+      "An AI assistant that answers questions from company documents with citations, using only the ones the user is allowed to see.",
+    period: "",
+    role: "",
+    problem:
+      "Answers existed across wikis, shared drives and PDFs, but finding them took longer than asking a colleague. A generic chatbot wasn't acceptable: it couldn't cite sources and would happily leak documents across teams.",
+    contribution: [
+      "Connected the assistant to the Amplify AI Data Ingestion Pipeline for parsing, chunking, embedding and re-indexing when documents change",
       "Implemented retrieval with access-control filtering tied to the company identity provider",
       "Designed the answer format with inline citations and an explicit 'I don't know' path",
-      "Set up an evaluation set to catch regressions when prompts or models change",
+      "Built an evaluation set to catch regressions when prompts or models change",
     ],
     decisions: [
       {
         decision: "Filter by permissions before retrieval, not after generation",
-        why: "The model never sees a chunk the user can't access, so there's nothing to leak. No prompt can talk its way around it.",
+        why: "The model never sees a chunk the user can't access, so there's nothing to leak. The filter runs before the model is called, so no prompt can get around it.",
       },
       {
         decision: "pgvector inside PostgreSQL instead of a separate vector database",
-        why: "Embeddings live next to document metadata and ACLs. One database to back up, secure, and query with joins.",
+        why: "Embeddings live next to document metadata and access rules. One database to back up, secure and query with joins.",
       },
       {
         decision: "No citation, no answer",
-        why: "If retrieval finds nothing relevant, the assistant says so. Trust is easier to lose than to build.",
+        why: "If retrieval finds nothing relevant, the assistant says so instead of guessing, so every answer it does give can be traced back to a source.",
       },
     ],
     trace: [
@@ -116,87 +147,127 @@ export const projects: Project[] = [
       { label: "Generate", detail: "LLM", kind: "ai" },
       { label: "Answer", detail: "with citations", kind: "client" },
     ],
-    stack: ["Python", "FastAPI", "PostgreSQL", "pgvector", "Azure OpenAI", "OIDC", "Docker"],
+    stack: ["Python", "FastAPI", "PostgreSQL", "pgvector", "Azure OpenAI", "OpenID Connect", "Docker"],
     links: [],
   },
   {
-    id: "auth-platform",
-    draft: true,
-    title: "Multi-Tenant Auth & API Platform",
-    kicker: "Backend · Identity & APIs",
-    summary: "The authentication, authorisation, and API layer behind a multi-tenant SaaS product: users, roles, API keys, and rate limits.",
-    period: "", // TODO: e.g. "2024"
-    role: "", // TODO: e.g. "Senior software engineer"
+    id: "amplify-ingestion",
+    draft: false,
+    title: "Amplify AI Data Ingestion Pipeline",
+    kicker: "AI · Document ingestion",
+    summary:
+      "The ingestion module behind Amplify AI: turns PDFs and scans into validated, structured content and routes anything uncertain to a human.",
+    period: "",
+    role: "",
     problem:
-      "Each new feature re-implemented its own permission checks, and one missed check meant one tenant could see another tenant's data. The product also needed API access for partners without handing out user passwords.",
+      "An assistant's answers are only as good as its reading of the documents behind them, so source files had to be extracted accurately before anything reached Amplify AI. Fully automating extraction wasn't safe either: a wrongly extracted field is worse than one that waits for human review.",
     contribution: [
-      "Designed a central auth service with OAuth2 / OIDC flows and short-lived JWTs",
-      "Implemented role-based access control and scoped API keys for partner integrations",
-      "Enforced tenant isolation in PostgreSQL with row-level security",
-      "Added rate limiting and audit logging for every privileged action",
+      "Designed and built the ingestion, extraction and validation pipeline that feeds Amplify AI",
+      "Wrote the first extractor on PyMuPDF, then switched extraction to LlamaParse for more accurate results",
+      "Built the FastAPI service and async workers that process documents in the background",
+      "Validated extracted data against Pydantic schemas and sent low-confidence results to a review queue",
     ],
     decisions: [
       {
-        decision: "Tenant isolation in the database, not only in handlers",
-        why: "Row-level security means a forgotten WHERE clause returns nothing instead of someone else's data.",
+        decision: "Move from a custom PyMuPDF extractor to LlamaParse",
+        why: "PyMuPDF extracts text and layout quickly, but tables and scanned pages need custom logic or OCR on top of it. LlamaParse's model-based parsing keeps table structure and handles scans, so switching to it made extraction more accurate.",
       },
       {
-        decision: "Short-lived access tokens with rotating refresh tokens",
-        why: "A leaked token expires in minutes, and refresh-token reuse is detectable and revocable.",
+        decision: "Treat extracted output as untrusted input",
+        why: "Every result is validated against a strict schema and retried or escalated when it fails. Bad data never reaches the assistant silently.",
       },
       {
-        decision: "OpenAPI-first contracts",
-        why: "Frontend and partner teams build against a published spec, so the API can evolve without surprise breakage.",
+        decision: "Idempotent jobs keyed by document hash",
+        why: "Each document's hash maps to exactly one job, so repeat uploads and worker restarts can't create duplicate records, and failed jobs can be retried aggressively.",
       },
     ],
     trace: [
-      { label: "Client", detail: "app / partner", kind: "client" },
-      { label: "Gateway", detail: "rate limit", kind: "infra" },
-      { label: "Auth", detail: "OIDC · JWT", kind: "service" },
+      { label: "Documents", detail: "PDF · scans", kind: "client" },
+      { label: "Ingest API", detail: "FastAPI", kind: "service" },
+      { label: "Job queue", detail: "idempotent", kind: "queue" },
+      { label: "Parse", detail: "LlamaParse", kind: "ai" },
+      { label: "Records", detail: "PostgreSQL", kind: "store" },
+    ],
+    stack: ["Python", "FastAPI", "Pydantic", "LlamaParse", "PyMuPDF", "Azure OpenAI", "PostgreSQL", "Azure Blob Storage", "Docker"],
+    links: [],
+  },
+  {
+    id: "blogbuster",
+    draft: false,
+    title: "BlogBuster",
+    kicker: "AI · Content automation",
+    summary:
+      "An AI article writer that turns a website URL into topic ideas and SEO articles, then schedules and publishes them on autopilot.",
+    period: "2024 to now",
+    role: "Backend engineer",
+    problem:
+      "Businesses know regular publishing helps them get found in search, but few have time to research topics, write articles and publish them every week. The product had to start from nothing more than a website URL and handle the rest, for many customers at once.",
+    contribution: [
+      "Developed the entire multi-tenant backend",
+      "Built autopilot article generation from a website URL, with topic suggestions",
+      "Added custom domain hosting and scheduled publishing",
+      "Integrated Umami analytics for traffic insights on each domain",
+      "Deployed on AWS ECS and Lambda, with Celery workers and PostgreSQL",
+    ],
+    decisions: [
+      {
+        decision: "Multi-tenant backend",
+        why: "Every customer gets their own hosted blog, custom domain, schedule and content, all served by one shared backend. Keeping each tenant's data separated is what lets one platform serve all of them.",
+      },
+      {
+        decision: "Background workers for generation and publishing",
+        why: "Researching, writing and publishing an article is slow, multi-step work that doesn't belong in a web request. Celery workers run it in the background and on a schedule.",
+      },
+    ],
+    trace: [
+      { label: "Website URL", detail: "input", kind: "client" },
       { label: "API", detail: "FastAPI", kind: "service" },
-      { label: "Tenants", detail: "Postgres RLS", kind: "store" },
+      { label: "Workers", detail: "Celery", kind: "queue" },
+      { label: "Articles", detail: "LLM generation", kind: "ai" },
+      { label: "Blog", detail: "custom domain", kind: "service" },
     ],
-    stack: ["Python", "FastAPI", "PostgreSQL", "Redis", "OAuth2 / OIDC", "AWS", "Terraform"],
-    links: [],
+    stack: ["Python", "FastAPI", "Celery", "PostgreSQL", "AWS ECS", "AWS Lambda", "Umami"],
+    links: [{ label: "blogbuster.so", href: "https://www.blogbuster.so" }],
   },
   {
-    id: "azure-platform",
-    draft: true,
-    title: "Azure Production Platform",
-    kicker: "DevOps · Cloud infrastructure",
-    summary: "A repeatable path from commit to production on Azure: infrastructure as code, one pipeline, and alerts that mean something.",
-    period: "", // TODO: e.g. "2024"
-    role: "", // TODO: e.g. "DevOps engineer"
+    id: "auth-module",
+    draft: false,
+    title: "OIDC Authentication Module",
+    kicker: "Backend · Identity & security",
+    summary:
+      "An in-house authentication module built on OpenID Connect, with security testing and production-level configuration.",
+    period: "",
+    role: "",
     problem:
-      "Deployments were manual, environments had drifted apart, and the team found out about outages from customers. Every release was a small act of courage.",
+      "An internal project needed its own authentication module with a proper OpenID Connect setup. Internal or not, it had to be well structured, security tested and configured to production standards.",
     contribution: [
-      "Codified all environments in Terraform so staging and production are built the same way",
-      "Built CI/CD that tests, scans, and builds one container image promoted across environments",
-      "Moved secrets to Key Vault with managed identities, so there are no credentials in pipelines or code",
-      "Set up dashboards and alerts on latency and error rates, plus a documented rollback path",
+      "Built the authentication module on standard OpenID Connect flows",
+      "Kept the codebase well structured and cleanly written",
+      "Wrote security-focused pytest suites that cover failure cases, not just successful logins",
+      "Set it up with production-level configuration",
     ],
     decisions: [
       {
-        decision: "Build once, promote everywhere",
-        why: "The image tested in staging is byte-for-byte the one that reaches production. 'Works in staging' finally means something.",
+        decision: "OpenID Connect instead of a home-grown token scheme",
+        why: "A widely reviewed standard is safer than custom security logic, and any OIDC-aware client or service can integrate with it.",
       },
       {
-        decision: "Alert on symptoms, not causes",
-        why: "Pages fire on what users feel (latency and errors), not on CPU spikes that fix themselves. Fewer alerts, taken seriously.",
+        decision: "Security tests as part of the test suite",
+        why: "Authentication bugs don't crash; they quietly let the wrong request through. Tests make the failure cases explicit and keep them covered as the code changes.",
       },
       {
-        decision: "Rollback is a first-class deployment",
-        why: "Reverting is the same pipeline with a previous image tag, rehearsed before it's needed.",
+        decision: "Production-level configuration for an internal project",
+        why: "Systems that never face the public still hold real credentials. Holding configuration and secrets to the same standard as a public service avoids a risky rework later.",
       },
     ],
     trace: [
-      { label: "Commit", detail: "git push", kind: "client" },
-      { label: "CI", detail: "test · scan · build", kind: "infra" },
-      { label: "Registry", detail: "one image", kind: "store" },
-      { label: "Staging", detail: "Container Apps", kind: "service" },
-      { label: "Production", detail: "monitored", kind: "service" },
+      { label: "App", detail: "sign-in", kind: "client" },
+      { label: "Auth module", detail: "OIDC", kind: "service" },
+      { label: "Tokens", detail: "JWT validation", kind: "infra" },
+      { label: "Services", detail: "protected APIs", kind: "service" },
     ],
-    stack: ["Azure Container Apps", "Terraform", "GitHub Actions", "Docker", "Key Vault", "Azure Monitor"],
+    stack: ["Python", "OpenID Connect", "OAuth 2.0", "JWT", "pytest"],
     links: [],
+    note: "Internal project, not publicly available.",
   },
 ];

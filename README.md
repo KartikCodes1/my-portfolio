@@ -29,7 +29,8 @@ All copy lives in `src/content/`. Components never hard-code personal facts, so 
 
 | Export     | What it controls                                                                  |
 | ---------- | --------------------------------------------------------------------------------- |
-| `profile`  | Name, handle, role, headline, lede, SEO description, `availability` and `responseTime` (both `null` until you set them; `null` hides them) |
+| `profile`  | Name, handle, role, location, headline, lede, social description, `availability` and `responseTime` (both `null` until you set them; `null` hides them) |
+| `seo`      | Search result title and description (keep it around 150 characters) and keywords used in the meta tags and JSON-LD |
 | `links`    | Email, LinkedIn, GitHub (`null` hides it)                                          |
 | `sections` | Section ids, index labels and names used by the header, palette and terminal     |
 | `work`     | Title and intro of the Selected work section                                      |
@@ -41,7 +42,7 @@ All copy lives in `src/content/`. Components never hard-code personal facts, so 
 
 **`src/content/projects.ts`**
 
-Every project ships as placeholder content with `draft: true`, which renders a visible "Draft" marker. Replace the text with real work and set `draft: false`. Keep `id`s stable, or update the matching ids in `stack` in `site.ts`.
+Case studies from real projects. Company and client names are intentionally left out. `draft: true` renders a visible "Draft" marker for anything still placeholder. Empty `period` or `role` fields are hidden. Keep `id`s stable, or update the matching ids in `stack` in `site.ts`.
 
 ### Site URL
 
