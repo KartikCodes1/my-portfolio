@@ -1,0 +1,196 @@
+@import "tailwindcss";
+
+/*
+ * Design tokens: "Control Plane".
+ * One accent (signal lime). Use it only for things that are live:
+ * active state, focus, status, the primary action. Never for decoration.
+ */
+@theme {
+  --color-bg: #0a0a0b;
+  --color-surface: #111113;
+  --color-surface-2: #17171a;
+  --color-line: rgb(255 255 255 / 0.08);
+  --color-line-strong: rgb(255 255 255 / 0.16);
+  --color-fg: #ededea;
+  --color-muted: #a3a3a0;
+  /* Clears 4.5:1 on bg, surface and surface-2, so small subtle text is legible inside panels too. */
+  --color-subtle: #808084;
+  --color-accent: #c9ef6e;
+  --color-accent-ink: #0a0a0b;
+  --color-accent-soft: rgb(201 239 110 / 0.1);
+
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SFMono-Regular", monospace;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Base */
+
+/* In the base layer so utilities (outline-none, rounded-*, kbd sizing) can override these. */
+@layer base {
+  html {
+    color-scheme: dark;
+    background: var(--color-bg);
+    scroll-padding-top: 5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv11";
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  /* Keyboard hint, e.g. <kbd>⌘K</kbd>. */
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    line-height: 1;
+    padding: 0.25rem 0.375rem;
+    border: 1px solid var(--color-line-strong);
+    border-bottom-width: 2px;
+    border-radius: 0.3rem;
+    color: var(--color-muted);
+    background: var(--color-surface-2);
+  }
+}
+
+/* Layout & type utilities */
+
+/* Page container: 1240px max, consistent side gutter. */
+@utility shell {
+  width: 100%;
+  max-width: 77.5rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+  @media (width >= 48rem) {
+    padding-inline: 2rem;
+  }
+}
+
+/* Mono micro-label: section indexes, metadata, table heads. */
+@utility eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-subtle);
+}
+
+@utility text-display {
+  font-size: clamp(2.75rem, 7.2vw, 6.75rem);
+  line-height: 0.95;
+  letter-spacing: -0.045em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+@utility text-heading {
+  font-size: clamp(2rem, 4.4vw, 3.5rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  text-wrap: balance;
+}
+
+@utility text-title {
+  font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+@utility text-lede {
+  font-size: clamp(1.0625rem, 1.4vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--color-muted);
+  text-wrap: pretty;
+}
+
+/* Hairline panel used across sections. */
+@utility panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: 0.75rem;
+}
+
+/* Motion */
+
+/*
+ * Scroll reveal, pure CSS. Browsers without scroll-driven animations
+ * (or users who prefer reduced motion) just see the content.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgb(201 239 110 / 0.45);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgb(201 239 110 / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* X-ray mode (easter egg: Konami code / palette / terminal) */
+
+/* Unlayered, so it beats the base-layer focus ring; the focused element is excluded to keep that ring visible. */
+html[data-xray] body *:not(svg *, :focus-visible) {
+  outline: 1px solid rgb(201 239 110 / 0.22);
+  outline-offset: -1px;
+}
