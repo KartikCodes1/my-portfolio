@@ -11,13 +11,13 @@ Single-page personal site for Kartik Parmar, Forward Deployed Engineer. It is de
 
 ## Run locally
 
-Requires Node.js 20.9 or newer.
+Requires Node.js 20.9 or newer and [pnpm](https://pnpm.io) 10 (the exact version is pinned in `packageManager` in `package.json`).
 
 ```bash
-npm install
-npm run dev      # http://localhost:3000
-npm run build    # production build
-npm run lint     # ESLint
+pnpm install
+pnpm dev      # http://localhost:3000
+pnpm build    # production build
+pnpm lint     # ESLint
 ```
 
 ## Customise
@@ -138,8 +138,8 @@ The accent (`#c9ef6e`) is reserved for live state: selection, focus, status, and
 Works on [Vercel](https://vercel.com) with no configuration, or on any Node.js host (set `NEXT_PUBLIC_SITE_URL` there):
 
 ```bash
-npm run build
-npm run start
+pnpm build
+pnpm start
 ```
 
 Set `NEXT_PUBLIC_SITE_URL` in the host's environment before building; it is inlined at build time.
