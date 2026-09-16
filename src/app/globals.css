@@ -152,24 +152,24 @@ main > section:not(:first-child) {
   contain-intrinsic-size: auto var(--estimated-height, 1500px);
 }
 
-#work { --estimated-height: 3090px; }
+#work { --estimated-height: 3110px; }
 #approach { --estimated-height: 1360px; }
 #stack { --estimated-height: 2060px; }
 #about { --estimated-height: 1480px; }
-#contact { --estimated-height: 1590px; }
+#contact { --estimated-height: 1650px; }
 
 @media (width >= 48rem) {
   #work { --estimated-height: 2750px; }
   #approach { --estimated-height: 1000px; }
-  #stack { --estimated-height: 1390px; }
+  #stack { --estimated-height: 1430px; }
   #about { --estimated-height: 1250px; }
-  #contact { --estimated-height: 1400px; }
+  #contact { --estimated-height: 1450px; }
 }
 
 @media (width >= 64rem) {
   #work { --estimated-height: 2380px; }
   #approach { --estimated-height: 880px; }
-  #stack { --estimated-height: 1080px; }
+  #stack { --estimated-height: 1100px; }
   #about { --estimated-height: 860px; }
   #contact { --estimated-height: 1230px; }
 }

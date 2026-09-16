@@ -73,8 +73,8 @@ export const projects: Project[] = [
     links: [],
   },
   {
-    // Kartik didn't build CoVigilAI from scratch; he made major modifications to it.
-    // TODO: stack and further contributions to come from Kartik.
+    // Kartik joined CoVigilAI mid-development and made major changes; he didn't build it from scratch.
+    // TODO: stack still to come from Kartik.
     // Product facts come from its public product site; no link, because that site names the vendor.
     id: "covigilai",
     draft: false,
@@ -87,12 +87,17 @@ export const projects: Project[] = [
     problem:
       "Drug safety teams must regularly screen published medical literature for reports of side effects involving their medicines, then turn each valid case into a structured report for regulators. Doing that by hand across large volumes of articles is slow, repetitive work.",
     contribution: [
-      "Made major enhancements to the existing platform rather than rebuilding it from scratch",
-      "Enhanced the processing pipeline and its orchestration",
-      "Strengthened the platform's security",
+      "Picked up the project mid-development and started shipping changes quickly",
+      "Optimised the platform's existing AI agents",
+      "Implemented a new AI orchestration layer for better generation and job queuing",
+      "Fixed authentication issues and strengthened the platform's security",
       "Implemented a freemium model so new users can try the product through a demo",
     ],
     decisions: [
+      {
+        decision: "Improve the agents and their orchestration instead of starting over",
+        why: "The AI agents already existed, so the biggest gains came from optimising them and coordinating generation and queuing better, without the risk of a rewrite.",
+      },
       {
         decision: "A freemium tier for trying the product",
         why: "New users can try the platform for themselves in a demo before committing to it.",
@@ -109,45 +114,37 @@ export const projects: Project[] = [
     links: [],
   },
   {
-    // TODO: Kartik will add more detail about Amplify AI.
+    // Kartik's description: researches a brand's own product data and the latest trends to suggest new product ideas.
+    // TODO: role and stack if Kartik remembers them.
     id: "amplify-ai",
     draft: false,
     title: "Amplify AI",
-    kicker: "AI · Retrieval (RAG)",
+    kicker: "AI · Product research",
     summary:
-      "An AI assistant that answers questions from company documents with citations, using only the ones the user is allowed to see.",
+      "An AI research tool that studies a brand's product data, its audience and the latest market trends to suggest new products that audience is likely to love.",
     period: "",
     role: "",
     problem:
-      "Answers existed across wikis, shared drives and PDFs, but finding them took longer than asking a colleague. A generic chatbot wasn't acceptable: it couldn't cite sources and would happily leak documents across teams.",
+      "Brands sit on years of product data and documentation, but turning it into a clear view of what their audience wants next means slow, manual research across that data and fast-moving market trends.",
     contribution: [
-      "Connected the assistant to the Amplify AI Data Ingestion Pipeline for parsing, chunking, embedding and re-indexing when documents change",
-      "Implemented retrieval with access-control filtering tied to the company identity provider",
-      "Designed the answer format with inline citations and an explicit 'I don't know' path",
-      "Built an evaluation set to catch regressions when prompts or models change",
+      "Built the data ingestion pipeline that turns a brand's product data and documentation into content the AI can analyse",
+      "Worked on the research flow that analyses a brand's audience and their tastes alongside the latest trends",
+      "Helped turn that analysis into concrete suggestions for new products",
     ],
     decisions: [
       {
-        decision: "Filter by permissions before retrieval, not after generation",
-        why: "The model never sees a chunk the user can't access, so there's nothing to leak. The filter runs before the model is called, so no prompt can get around it.",
-      },
-      {
-        decision: "pgvector inside PostgreSQL instead of a separate vector database",
-        why: "Embeddings live next to document metadata and access rules. One database to back up, secure and query with joins.",
-      },
-      {
-        decision: "No citation, no answer",
-        why: "If retrieval finds nothing relevant, the assistant says so instead of guessing, so every answer it does give can be traced back to a source.",
+        decision: "Ground ideas in the brand's own data",
+        why: "Suggestions start from the brand's actual products and documentation rather than generic trends, so they fit what its audience already likes.",
       },
     ],
     trace: [
-      { label: "User", detail: "SSO", kind: "client" },
-      { label: "Chat API", detail: "FastAPI", kind: "service" },
-      { label: "Retrieve", detail: "pgvector + ACL", kind: "store" },
-      { label: "Generate", detail: "LLM", kind: "ai" },
-      { label: "Answer", detail: "with citations", kind: "client" },
+      { label: "Brand data", detail: "products · docs", kind: "client" },
+      { label: "Ingestion", detail: "pipeline", kind: "service" },
+      { label: "Trends", detail: "research", kind: "ai" },
+      { label: "Audience", detail: "taste analysis", kind: "ai" },
+      { label: "Ideas", detail: "new products", kind: "client" },
     ],
-    stack: ["Python", "FastAPI", "PostgreSQL", "pgvector", "Azure OpenAI", "OpenID Connect", "Docker"],
+    stack: [],
     links: [],
   },
   {
@@ -160,7 +157,7 @@ export const projects: Project[] = [
     period: "",
     role: "",
     problem:
-      "An assistant's answers are only as good as its reading of the documents behind them, so source files had to be extracted accurately before anything reached Amplify AI. Fully automating extraction wasn't safe either: a wrongly extracted field is worse than one that waits for human review.",
+      "Amplify AI's product ideas are only as good as its reading of a brand's documents, so source files had to be extracted accurately before anything reached the analysis. Fully automating extraction wasn't safe either: a wrongly extracted field is worse than one that waits for human review.",
     contribution: [
       "Designed and built the ingestion, extraction and validation pipeline that feeds Amplify AI",
       "Wrote the first extractor on PyMuPDF, then switched extraction to LlamaParse for more accurate results",
@@ -174,7 +171,7 @@ export const projects: Project[] = [
       },
       {
         decision: "Treat extracted output as untrusted input",
-        why: "Every result is validated against a strict schema and retried or escalated when it fails. Bad data never reaches the assistant silently.",
+        why: "Every result is validated against a strict schema and retried or escalated when it fails. Bad data never reaches the analysis silently.",
       },
       {
         decision: "Idempotent jobs keyed by document hash",
