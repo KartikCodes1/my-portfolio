@@ -7,7 +7,7 @@ Single-page personal site for Kartik Parmar, Forward Deployed Engineer. It is de
 - [Next.js 16](https://nextjs.org) (App Router, Turbopack), React 19, TypeScript
 - Tailwind CSS v4 (tokens defined in CSS, no `tailwind.config`)
 - Geist Sans and Geist Mono via `next/font`
-- [Vercel Web Analytics](https://vercel.com/docs/analytics) (`@vercel/analytics`): cookieless page-view counts, active only when deployed on Vercel
+- [Vercel Web Analytics](https://vercel.com/docs/analytics) (`@vercel/analytics`) and [Speed Insights](https://vercel.com/docs/speed-insights) (`@vercel/speed-insights`): cookieless page views and real-user Core Web Vitals, active only when deployed on Vercel
 - No animation or icon libraries
 
 ## Run locally
