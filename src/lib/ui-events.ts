@@ -1,6 +1,6 @@
 /**
  * Tiny event bus between independent client islands (header, palette, terminal, work list).
- * ponytail: window events instead of a React context, since the islands share no render tree.
+ * Uses window events instead of a React context, since these islands share no render tree.
  */
 
 export type UiEvent = "ui:palette-open" | "ui:terminal-open" | "ui:xray-toggle";

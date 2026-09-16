@@ -22,7 +22,7 @@ export function StackExplorer({
   layers: readonly Layer[];
   projectTitles: ProjectTitles;
 }) {
-  // ponytail: starts on the first tool of the top layer; no content flag needed to pick another.
+  // Selection starts on the first tool of the top layer.
   const [selected, setSelected] = useState<Selection>({ layer: 0, tool: 0 });
   const toolCount = layers.reduce((n, layer) => n + layer.tools.length, 0);
 

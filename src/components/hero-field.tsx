@@ -147,7 +147,7 @@ export function HeroField() {
           tinted = false;
         }
 
-        // ponytail: squares, not arcs: indistinguishable at 2px and far cheaper to fill.
+        // Squares instead of arcs: they look identical at 2px and are much cheaper to fill.
         const size = DOT + h * 0.75;
         ctx!.globalAlpha = alpha > 1 ? 1 : alpha;
         ctx!.fillRect(hx + offX[i] - size / 2, hy + offY[i] - size / 2, size, size);

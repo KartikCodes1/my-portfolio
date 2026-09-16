@@ -30,7 +30,7 @@ export const work = {
 };
 
 export const links = {
-  email: "kartikxd009@gmail.com",
+  email: "hello@kartikcodes.io",
   // Profile URLs use the /in/ path. Adjust if yours differs.
   linkedin: "https://www.linkedin.com/in/kartikindian",
   // TODO: add your GitHub profile URL to show it on the site, e.g. "https://github.com/username".
@@ -210,4 +210,22 @@ export const about = {
 export const contact = {
   title: "Have a problem that needs to reach production?",
   body: "Tell me what's slow, manual, or stuck at prototype. I'll give you an honest read on whether I can help, and what the simplest version looks like.",
+};
+
+/**
+ * Contact form, delivered to a Google Form. Setup steps: README > "Contact form".
+ * TODO: set `formId` and the five `entries` from your form's pre-filled link.
+ * While `formId` is null the form still works: it opens the visitor's email app with the message filled in.
+ */
+export const contactForm = {
+  formId: null as string | null,
+  entries: {
+    name: "entry.0000000000",
+    email: "entry.0000000000",
+    company: "entry.0000000000",
+    topic: "entry.0000000000",
+    message: "entry.0000000000",
+  },
+  // Must match the options of the Google Form's multiple-choice question exactly.
+  topics: ["AI product or LLM feature", "Backend system or API", "Cloud, DevOps or infrastructure", "Full-time role", "Something else"],
 };
