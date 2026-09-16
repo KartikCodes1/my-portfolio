@@ -12,10 +12,10 @@ export const profile = {
   role: "Forward Deployed Engineer",
   location: { city: "Ahmedabad", country: "India", countryCode: "IN" },
   headline: "I build AI products and backend systems that make it past the demo.",
-  lede: "Forward deployed engineer with 5+ years in backend systems and DevOps, now building RAG pipelines, agentic AI workflows and the Python services behind them. I work close to the problem, design the system and ship it to production on AWS, GCP, Azure or wherever it needs to run.",
+  lede: "Forward deployed engineer with 5+ years in backend systems and DevOps, now building AI products end to end: RAG pipelines, agentic workflows, Python backends and the web apps people actually use. I work close to the problem, design the system and ship it to production on AWS, GCP, Azure or wherever it needs to run.",
   // Short description used for social cards.
   description:
-    "Kartik Parmar, Forward Deployed Engineer, building AI products, RAG pipelines, agentic AI workflows and Python/FastAPI backends on AWS, GCP and Azure.",
+    "Kartik Parmar, Forward Deployed Engineer, building AI products end to end: RAG pipelines, agentic AI workflows, Python/FastAPI backends and full-stack web apps on AWS, GCP and Azure.",
   // TODO: set to what's true right now (e.g. "Open to new projects") to show the live status dot; null hides it.
   availability: null as string | null,
   // TODO: set a response time you can keep (e.g. "Usually replies within 2 business days"); null hides it.
@@ -34,7 +34,7 @@ export const seo = {
   updated: "2026-09-17",
   title: "Kartik Parmar | Forward Deployed AI Engineer, Ahmedabad",
   description:
-    "Forward Deployed Engineer in Ahmedabad, India. 5+ years in backend and DevOps, now building RAG, agentic AI and FastAPI services on AWS, GCP and Azure.",
+    "Forward Deployed Engineer in Ahmedabad, India. 5+ years in backend and DevOps, now building AI products and full-stack web apps on AWS, GCP and Azure.",
   keywords: [
     "Kartik Parmar",
     "Forward Deployed Engineer",
@@ -49,6 +49,10 @@ export const seo = {
     "LangGraph",
     "CrewAI",
     "LlamaParse",
+    "Full-stack developer",
+    "Next.js",
+    "React",
+    "TypeScript",
     "FastAPI developer",
     "Python backend engineer",
     "PostgreSQL",
@@ -184,6 +188,17 @@ export const stack = {
       ],
     },
     {
+      id: "frontend",
+      name: "Frontend & Web Apps",
+      blurb: "The part people actually use.",
+      tools: [
+        { name: "Next.js", note: "Complete web apps with server rendering and API routes, built to scale. This site runs on it.", projects: [] },
+        { name: "React", note: "Interactive, component-based interfaces that stay fast and responsive.", projects: [] },
+        { name: "TypeScript", note: "Typed code across frontend and backend, so apps stay maintainable as they grow.", projects: [] },
+        { name: "Tailwind CSS", note: "Responsive, consistent UI built from a design system.", projects: [] },
+      ],
+    },
+    {
       id: "backend",
       name: "Backend & APIs",
       blurb: "The contracts everything else depends on.",
@@ -213,9 +228,10 @@ export const stack = {
       name: "Cloud & Infrastructure",
       blurb: "Running it for real, not just locally.",
       tools: [
-        { name: "AWS", note: "ECS and Lambda for the BlogBuster backend in production. As a technical lead I also optimised AWS deployments to cut infrastructure spend.", projects: ["blogbuster", "cliniwise-ai"] },
-        { name: "Azure", note: "About 2 years in production, plus an isolated deployment in private subnets for a client with strict data privacy requirements.", projects: ["cliniwise-ai", "amplify-ingestion"] },
+        { name: "AWS", note: "My main cloud: ECS and Lambda for the BlogBuster backend in production. As a technical lead I also optimised AWS deployments to cut infrastructure spend.", projects: ["blogbuster", "cliniwise-ai"] },
         { name: "GCP", note: "Part of multi-cloud deployments alongside AWS and Azure.", projects: ["cliniwise-ai"] },
+        { name: "Azure", note: "About 2 years in production, plus an isolated deployment in private subnets for a client with strict data privacy requirements.", projects: ["cliniwise-ai", "amplify-ingestion"] },
+        { name: "Vercel", note: "Deploying web apps with preview builds, analytics and speed insights. This site is deployed on it.", projects: [] },
         { name: "Docker", note: "Containerised services that run the same way in every environment.", projects: ["amplify-ingestion"] },
         { name: "Kubernetes", note: "Orchestrating containerised services.", projects: [] },
       ],
@@ -239,6 +255,7 @@ export const about = {
   paragraphs: [
     "I'm Kartik, a forward deployed AI engineer based in Ahmedabad, India. For 5+ years I've built backend systems and the infrastructure under them, and today most of that work is AI: RAG pipelines, agentic workflows and the Python services that keep them running in production.",
     "As a senior software engineer, I designed and owned the backend of a clinical trial AI platform, cutting narration time from 3 hours to 5 minutes. I also delivered RAG systems that reached 95% retrieval accuracy and RAG MVPs that halved client onboarding time. Now I work as a technical lead on AI projects, including a med-tech initiative built to HIPAA standards, and take on freelance engagements where I can own a problem end to end.",
+    "I build the frontend too, so a product doesn't stop at the API. I'm confident taking a web app from first screen to production, built to scale.",
     "Away from the keyboard I'm usually on a motorcycle, in the gym, deep in a game or tinkering with some piece of creative tech that has no business plan at all.",
   ],
   // Rendered as a small YAML-style config card.
@@ -246,6 +263,7 @@ export const about = {
     { key: "role", value: "forward deployed engineer" },
     { key: "now", value: "technical lead + freelance" },
     { key: "experience", value: "5+ years", comment: "backend & devops, mostly ai today" },
+    { key: "builds", value: "full-stack ai products" },
     { key: "cloud", value: "[aws, gcp, azure]", comment: "~2y azure in prod" },
     { key: "location", value: "Ahmedabad, India" },
     { key: "previously", value: "senior software engineer" },
@@ -263,7 +281,7 @@ export const contact = {
  * Setup: README > "Contact form". Until RESEND_API_KEY is set, the form opens the visitor's email app instead.
  */
 export const contactForm = {
-  topics: ["AI product or LLM feature", "Backend system or API", "Cloud, DevOps or infrastructure", "Full-time role", "Something else"],
+  topics: ["AI product or LLM feature", "Backend system or API", "Full-stack web app", "Cloud, DevOps or infrastructure", "Full-time role", "Something else"],
   // Enforced by the API route; the form mirrors them as maxLength.
   limits: { name: 100, email: 254, company: 120, message: 5000 },
 };

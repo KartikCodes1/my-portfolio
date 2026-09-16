@@ -36,7 +36,7 @@ export function ContactForm() {
       name: value("name"),
       email: value("email"),
       company: value("company"),
-      topic: value("topic"),
+      topics: data.getAll("topic").map(String),
       message: value("message"),
       website: value("website"),
     };
@@ -51,7 +51,7 @@ export function ContactForm() {
 
       if (res.status === 503) {
         // Email sending isn't configured on this deployment: hand the message to the visitor's email app instead.
-        const subject = `${fields.topic || "Project enquiry"} from ${fields.name}`;
+        const subject = `${fields.topics.join(", ") || "Project enquiry"} from ${fields.name}`;
         const signature = [fields.name, fields.company, fields.email].filter(Boolean).join("\n");
         location.href = `mailto:${links.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`${fields.message}\n\n${signature}`)}`;
         setStatus("idle");
@@ -154,7 +154,7 @@ export function ContactForm() {
 
         <fieldset className="sm:col-span-2">
           <legend className="eyebrow">
-            What&apos;s it about? <span className="normal-case tracking-normal">(optional)</span>
+            What&apos;s it about? <span className="normal-case tracking-normal">(optional, pick any)</span>
           </legend>
           <div className="mt-3 flex flex-wrap gap-2">
             {contactForm.topics.map((topic) => (
@@ -162,8 +162,9 @@ export function ContactForm() {
                 key={topic}
                 className="inline-flex min-h-10 cursor-pointer items-center gap-2 rounded-md border border-line px-3 text-sm text-muted transition-colors duration-200 hover:border-line-strong hover:text-fg has-checked:border-accent/60 has-checked:bg-accent-soft has-checked:text-fg has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-accent"
               >
-                <input type="radio" name="topic" value={topic} className="peer sr-only" />
-                <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-line-strong transition-colors peer-checked:bg-accent" />
+                <input type="checkbox" name="topic" value={topic} className="peer sr-only" />
+                {/* Square marker, since these are checkboxes (more than one can be picked). */}
+                <span aria-hidden className="size-1.5 shrink-0 rounded-[1px] bg-line-strong transition-colors peer-checked:bg-accent" />
                 {topic}
               </label>
             ))}

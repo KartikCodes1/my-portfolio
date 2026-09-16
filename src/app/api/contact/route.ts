@@ -1,4 +1,6 @@
 import { contactForm, links, profile } from "@/content/site";
+import { renderContactEmail } from "@/lib/contact-email";
+import { siteUrl } from "@/lib/site-url";
 
 const LIMITS = contactForm.limits;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -25,7 +27,9 @@ export async function POST(request: Request) {
   const name = field("name");
   const email = field("email");
   const company = field("company");
-  const topic = field("topic");
+  // Any number of the predefined topics (none is fine); anything else fails validation below.
+  const rawTopics = body && typeof body === "object" ? (body as Record<string, unknown>).topics : undefined;
+  const topics = rawTopics === undefined ? [] : Array.isArray(rawTopics) ? [...new Set(rawTopics)] : null;
   const message = field("message");
 
   const valid =
@@ -36,7 +40,8 @@ export async function POST(request: Request) {
     company.length <= LIMITS.company &&
     message.length > 0 &&
     message.length <= LIMITS.message &&
-    (topic === "" || contactForm.topics.includes(topic));
+    topics !== null &&
+    topics.every((t) => typeof t === "string" && contactForm.topics.includes(t));
   if (!valid) return Response.json({ error: "Please check the form and try again." }, { status: 400 });
 
   const apiKey = process.env.RESEND_API_KEY;
@@ -44,10 +49,12 @@ export async function POST(request: Request) {
   if (!apiKey) return Response.json({ error: "The contact form isn't configured yet." }, { status: 503 });
 
   const domain = links.email.split("@")[1];
-  const lines = [`Name: ${name}`, `Email: ${email}`];
-  if (company) lines.push(`Company: ${company}`);
-  if (topic) lines.push(`Topic: ${topic}`);
-  lines.push("", message);
+  // HTML styled like the site (visitor input is escaped in the template) plus a plain-text alternative.
+  const { subject, html, text } = renderContactEmail(
+    // Validated above: every topic is one of contactForm.topics.
+    { name, email, company, topics: topics as string[], message },
+    { ownerName: profile.name, initials: profile.initials, siteHost: new URL(siteUrl).host, siteUrl },
+  );
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -57,9 +64,9 @@ export async function POST(request: Request) {
         from: process.env.CONTACT_FROM ?? `${profile.name} website <contact@${domain}>`,
         to: links.email,
         reply_to: email,
-        // Plain text only, so nothing a visitor types is ever rendered as HTML.
-        subject: `${topic || "New message"} from ${name}`.replace(/\s+/g, " ").slice(0, 150),
-        text: lines.join("\n"),
+        subject,
+        html,
+        text,
       }),
       signal: AbortSignal.timeout(10_000),
     });

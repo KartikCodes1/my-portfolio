@@ -154,24 +154,24 @@ main > section:not(:first-child) {
 
 #work { --estimated-height: 3110px; }
 #approach { --estimated-height: 1360px; }
-#stack { --estimated-height: 2060px; }
-#about { --estimated-height: 1480px; }
-#contact { --estimated-height: 1650px; }
+#stack { --estimated-height: 2280px; }
+#about { --estimated-height: 1630px; }
+#contact { --estimated-height: 1720px; }
 
 @media (width >= 48rem) {
   #work { --estimated-height: 2750px; }
   #approach { --estimated-height: 1000px; }
-  #stack { --estimated-height: 1430px; }
-  #about { --estimated-height: 1250px; }
+  #stack { --estimated-height: 1650px; }
+  #about { --estimated-height: 1350px; }
   #contact { --estimated-height: 1450px; }
 }
 
 @media (width >= 64rem) {
   #work { --estimated-height: 2380px; }
   #approach { --estimated-height: 880px; }
-  #stack { --estimated-height: 1100px; }
-  #about { --estimated-height: 860px; }
-  #contact { --estimated-height: 1230px; }
+  #stack { --estimated-height: 1230px; }
+  #about { --estimated-height: 930px; }
+  #contact { --estimated-height: 1260px; }
 }
 
 /* Motion */
